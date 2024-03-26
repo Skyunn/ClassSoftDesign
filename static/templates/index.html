@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block title %}
+Main
+{% endblock %}
+
+{% block content %}
+<form method="GET" action="{{url_for('search')}}">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" name="query" placeholder="Search..." value="{{query}}">
+        <select class="form-control" name="category">
+            <option value="All" {% if category == 'All'%} selected {% endif %}>All</option>
+            <option value="Electronics" {% if category == 'Electronics'%} selected {% endif %}>Electronics</option>
+            <option value="Clothing" {% if category == 'Clothing'%} selected {% endif %}>Clothing</option>
+            <option value="Food" {% if category == 'Food'%} selected {% endif %}>Food</option>
+            
+        </select>
+
+        <div class="input-group-append">
+
+            <button class="btn btn-outline-success custom-btn-violet" type="submit">Search
+            </button>
+
+            <style>
+                .custom-btn-violet {
+                    color: #ad780d;
+                    /* Text color */
+                    border-color: #ad780d;
+                    /* Border color */
+                }
+
+                .custom-btn-violet:hover {
+                    color: #fff;
+                    /* Text color on hover */
+                    background-color: #ad780d;
+                    /* Background color on hover */
+                    border-color: #ad780d;
+                    /* Border color on hover */
+                }
+            </style>
+
+        </div>
+    </div>
+</form>
+<table class="table table-hover table-dark">
+    <!-- 
+            table-hover is state of object when in hover (mouse cursor)
+            table-dark is set the table/object into black bg with white text
+        -->
+    <thead>
+        <tr>
+            <!-- Your Columns HERE -->
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Date Purchased</th>
+            <th scope="col">Price</th>
+            <th scope="col">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Your rows inside the table HERE: -->
+        {% for item in items %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.datePurchased}}</td>
+            <td>₱ {{ item.price }}</td>
+            <td>
+                <button class="btn btn-outline btn-info" data-toggle="modal" data-target="#ItemInfo_{{item.id}}">More Info</button>
+                <a class="btn btn-outline btn-warning" href="{{url_for('updateItem',item_id=item.id)}}">Edit</a>
+                <a class="btn btn-outline btn-success" href="{{url_for('registerPurchase',item_id=item.id)}}">Purchase this Item</button>
+
+                <a class="btn btn-outline btn-delete" href="{{url_for('deleteItem',item_id=item.id)}}">Delete</a>
+
+                <style>
+                    .btn-success {
+                        color: #ffffff;
+                        /* Text color */
+                        background-color: #ad780d;
+                        /* Background color on hover */
+                        border-color: #ad780d;
+                        /* Border color */
+                    }
+
+                    .btn-success:hover {
+                        color: #fff;
+                        /* Text color on hover */
+                        background-color: #7c560a;
+                        /* Background color on hover */
+                        border-color: #ad780d;
+                        /* Border color on hover */
+                    }
+
+                    .btn-warning {
+                        color: #ffffff;
+                        /* Text color */
+                        background-color: #0dad45;
+                        /* Background color on hover */
+                        border-color: #0dad38;
+                        /* Border color */
+                    }
+
+                    .btn-warning:hover {
+                        color: #fff;
+                        /* Text color on hover */
+                        background-color: #0dad45;
+                        /* Background color on hover */
+                        border-color: #0dad38;
+                        /* Border color on hover */
+                    }
+
+                    .btn-delete {
+                        color: #ffffff;
+                        /* Text color */
+                        background-color: #ad0d0d;
+                        /* Background color on hover */
+                        border-color: #ad0d0d;
+                        /* Border color */
+                    }
+
+                    .btn-delete:hover {
+                        color: #fff;
+                        /* Text color on hover */
+                        background-color: #7c0a0a;
+                        /* Background color on hover */
+                        border-color: #ad0d0d;
+                        /* Border color on hover */
+                    }
+                </style>
+
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<button class="btn btn-outline btn-add rounded-pill" id="fixed-button" data-toggle="modal" data-target="#staticBackdrop">Add</button>
+
+<style>
+    .btn-add {
+        color: #ffffff;
+        background-color: #22ad0d;
+        border-color: #22ad0d;
+    }
+
+    .btn-add:hover {
+        color: #fff;
+        background-color: #1e910c;
+        border-color: #22ad0d;
+    }
+</style>
+
+<!-- Register Modal -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="refreshPage()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+            <form id="create_form" method = "POST" action="{{ url_for('registerElectronics')}}" class = "form-register" style = "color: forestgreen;">
+                {{form.hidden_tag() }}
+                <h1 class = "h3 mb-3 font-weight-bold">
+                    Register Electronics
+                </h1>
+                {{form.name.label()}} {{form.name(class="form-control", placeholder="Input Name...")}} 
+                {{form.price.label()}} {{form.price(class="form-control", placeholder="Input Price")}} 
+                {{form.manufacturer.label()}} {{form.manufacturer(class="form-control", placeholder="Input Manufacturer")}} 
+                {{form.description.label()}} {{form.description(class="form-control", placeholder="Input Description")}} 
+                 
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshPage()">Close</button>
+            <button type="submit" class="btn btn-primary" data-dismiss="modal" onclick="submitForm('create_form')">Submit</button>
+        </div>
+    </div>
+    </div>
+</div>
+
+    {% for item in items %}
+<!-- Info Modal -->
+<div class="modal fade" id="ItemInfo_{{item.id}}" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <h1 class="h3 mb-3 font-weight-bold" style="text-align: center; color: green;">
+                        Item Information
+                    </h1>
+                    <thead>
+                        <tr>
+                            <th>ID: </th>
+                            <th>{{ item.id }}</th>
+                        </tr>
+                        <tr>
+                            <th>Price: </th>
+                            <th>₱{{ item.price }}</th>
+                        </tr>
+                        {% if item.type == "electronics" %}
+                        <tr>
+                            <td>Manufacturer: </td>
+                            <td>{{ item.manufacturer }} </td>
+                        </tr>
+                        {% elif item.type == "food" %}
+                        <tr>
+                            <td>HalalCertified: </td>
+                            <td>{{ item.isHalalCertified }} </td>
+                        </tr>
+                        {% elif item.type == "clothing" %}
+                        <tr>
+                            <td>Clothing: </td>
+                            <td>{{ item.brand }} </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Description: </th>
+                            <th>{{ item.description }}</th>
+                        </tr>
+                    </thead>
+                </table>            
+            </div>
+        </div>
+    </div>
+</div>
+    {% endfor %}
+
+{% endblock %}
